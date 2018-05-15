@@ -616,7 +616,26 @@ func ReadTopologyInstanceBufferable(instanceKey *InstanceKey, bufferWrites bool,
 		}()
 	}
 
-	if config.Config.DetectInstanceAliasQuery != "" && !isMaxScale {
+        if len(config.Config.HostnameToAlias) > 0 && !isMaxScale {
+                // We allow the HostnameToAlias mapping overrides to be applied;
+                // DetectInstanceAliasQuery will supercede this result
+                waitGroup.Add(1)
+                go func() {
+                        defer waitGroup.Done()
+                        for pattern, alias := range config.Config.HostnameToAlias {
+                                if pattern == "" {
+                                        continue
+                                }
+                                if matched, _ := regexp.MatchString(pattern, instance.Key.Hostname); matched {
+                                        instance.InstanceAlias = alias
+                                        return
+                                }
+                        }
+                        logReadTopologyInstanceError(instanceKey, "HostnameToAlias", nil)
+                }()
+        }
+
+        if config.Config.DetectInstanceAliasQuery != "" && !isMaxScale {
 		waitGroup.Add(1)
 		go func() {
 			defer waitGroup.Done()

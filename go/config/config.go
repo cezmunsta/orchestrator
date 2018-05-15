@@ -171,6 +171,7 @@ type Configuration struct {
 	AccessTokenUseExpirySeconds                uint              // Time by which an issued token must be used
 	AccessTokenExpiryMinutes                   uint              // Time after which HTTP access token expires
 	ClusterNameToAlias                         map[string]string // map between regex matching cluster name to a human friendly alias
+	HostnameToAlias                            map[string]string // map between regex matching hostname to a human friendly alias
 	DetectClusterAliasQuery                    string            // Optional query (executed on topology instance) that returns the alias of a cluster. Query will only be executed on cluster master (though until the topology's master is resovled it may execute on other/all replicas). If provided, must return one row, one column
 	DetectClusterDomainQuery                   string            // Optional query (executed on topology instance) that returns the VIP/CNAME/Alias/whatever domain name for the master of this cluster. Query will only be executed on cluster master (though until the topology's master is resovled it may execute on other/all replicas). If provided, must return one row, one column
 	DetectInstanceAliasQuery                   string            // Optional query (executed on topology instance) that returns the alias of an instance. If provided, must return one row, one column
@@ -335,6 +336,7 @@ func newConfiguration() *Configuration {
 		AccessTokenUseExpirySeconds:                60,
 		AccessTokenExpiryMinutes:                   1440,
 		ClusterNameToAlias:                         make(map[string]string),
+		HostnameToAlias:                            make(map[string]string),
 		DetectClusterAliasQuery:                    "",
 		DetectClusterDomainQuery:                   "",
 		DetectInstanceAliasQuery:                   "",

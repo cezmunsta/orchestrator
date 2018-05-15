@@ -89,6 +89,19 @@ func getHostnameResolvesLightweightCache() *cache.Cache {
 	return hostnameResolvesLightweightCache
 }
 
+func mappedHostnameToAlias(hostname string) string {
+	for pattern, alias := range config.Config.HostnameToAlias {
+		if pattern == "" {
+			// sanity
+			continue
+		}
+		if matched, _ := regexp.MatchString(pattern, hostname); matched {
+			return alias
+		}
+	}
+	return ""
+}
+
 func HostnameResolveMethodIsNone() bool {
 	return strings.ToLower(config.Config.HostnameResolveMethod) == "none"
 }
@@ -103,6 +116,14 @@ func GetCNAME(hostname string) (string, error) {
 	return res, nil
 }
 
+// GetAlias resolves via a lookup table
+func GetAlias(hostname string) (string) {
+        if alias := mappedHostnameToAlias(hostname); alias != "" {
+                return alias
+        }
+        return hostname
+}
+
 func resolveHostname(hostname string) (string, error) {
 	switch strings.ToLower(config.Config.HostnameResolveMethod) {
 	case "none":
@@ -111,6 +132,8 @@ func resolveHostname(hostname string) (string, error) {
 		return hostname, nil
 	case "cname":
 		return GetCNAME(hostname)
+        case "alias":
+                return GetAlias(hostname), nil
 	}
 	return hostname, nil
 }
