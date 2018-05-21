@@ -618,7 +618,7 @@ func ReadTopologyInstanceBufferable(instanceKey *InstanceKey, bufferWrites bool,
 
         if len(config.Config.HostnameToAlias) > 0 && !isMaxScale {
                 // We allow the HostnameToAlias mapping overrides to be applied;
-                // DetectInstanceAliasQuery will supercede this result
+                // DetectInstanceAliasQuery will supersede this result
                 waitGroup.Add(1)
                 go func() {
                         defer waitGroup.Done()
