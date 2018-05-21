@@ -628,9 +628,11 @@ func ReadTopologyInstanceBufferable(instanceKey *InstanceKey, bufferWrites bool,
                                 }
                                 if matched, _ := regexp.MatchString(pattern, fmt.Sprintf("%s:%d", instance.Key.Hostname, instance.Key.Port)); matched {
                                         instance.InstanceAlias = alias
+                                        instance.Key.Alias = alias
                                         return
                                 } else if matched, _ := regexp.MatchString(pattern, instance.Key.Hostname); matched {
                                         instance.InstanceAlias = alias
+                                        instance.Key.Alias = alias
                                         return
                                 }
                         }
