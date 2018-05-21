@@ -164,7 +164,11 @@ func (this *InstanceKey) ReattachedKey() *InstanceKey {
 
 // StringCode returns an official string representation of this key
 func (this *InstanceKey) StringCode() string {
-	return fmt.Sprintf("%s:%d", this.Hostname, this.Port)
+        displayName := this.Hostname
+        if len(this.Alias) > 0 {
+                displayName = this.Alias
+        }
+	return fmt.Sprintf("%s:%d", displayName, this.Port)
 }
 
 // DisplayString returns a user-friendly string representation of this key
