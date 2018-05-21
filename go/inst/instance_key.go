@@ -26,6 +26,7 @@ import (
 // InstanceKey is an instance indicator, identifued by hostname and port
 type InstanceKey struct {
 	Hostname string
+        Alias    string
 	Port     int
 }
 
@@ -42,6 +43,9 @@ func NewRawInstanceKey(hostPort string) (*InstanceKey, error) {
 	if instanceKey.Port, err = strconv.Atoi(tokens[1]); err != nil {
 		return instanceKey, fmt.Errorf("Invalid port: %s", tokens[1])
 	}
+
+        // Initialise the InstanceKey.Alias to match the hostname
+        instanceKey.Alias = tokens[0]
 
 	return instanceKey, nil
 }
@@ -71,6 +75,9 @@ func NewInstanceKeyFromStrings(hostname string, port string) (*InstanceKey, erro
 	if instanceKey.Hostname, err = ResolveHostname(hostname); err != nil {
 		return instanceKey, err
 	}
+
+        // Initialise the InstanceKey.Alias to match the hostname
+        instanceKey.Alias = hostname
 
 	return instanceKey, nil
 }
