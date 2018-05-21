@@ -644,6 +644,15 @@ func ReadTopologyInstanceBufferable(instanceKey *InstanceKey, bufferWrites bool,
 		}()
 	}
 
+        if config.Config.ForceHostnameToAlias && len(instance.InstanceAlias) > 0 {
+                // WARNING: this must all work for MASTER_HOST as it will be used
+                // during replication tasks.
+                if instance.Key.Hostname != instance.InstanceAlias {
+                        log.Warningf("Hostname override: %+v from [%+v]", instance.InstanceAlias, instance.Key.Hostname)
+                }
+                instance.Key.Hostname = instance.InstanceAlias
+        }
+
 	if config.Config.DetectSemiSyncEnforcedQuery != "" && !isMaxScale {
 		waitGroup.Add(1)
 		go func() {
