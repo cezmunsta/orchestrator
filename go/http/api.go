@@ -2632,7 +2632,7 @@ func (this *HttpAPI) ReloadConfiguration(params martini.Params, r render.Render,
 
 // ReplicationAnalysis retuens list of issues
 func (this *HttpAPI) replicationAnalysis(clusterName string, instanceKey *inst.InstanceKey, params martini.Params, r render.Render, req *http.Request) {
-	analysis, err := inst.GetReplicationAnalysis(clusterName, true, false)
+	analysis, err := inst.GetReplicationAnalysis(clusterName, &inst.ReplicationAnalysisHints{IncludeDowntimed: true})
 	if err != nil {
 		Respond(r, &APIResponse{Code: ERROR, Message: fmt.Sprintf("Cannot get analysis: %+v", err)})
 		return
@@ -2970,7 +2970,7 @@ func (this *HttpAPI) AcknowledgeClusterRecoveries(params martini.Params, r rende
 	if orcraft.IsRaftEnabled() {
 		ack := logic.NewRecoveryAcknowledgement(userId, comment)
 		ack.ClusterName = clusterName
-		orcraft.PublishCommand("ack-recovery", ack)
+		_, err = orcraft.PublishCommand("ack-recovery", ack)
 	} else {
 		_, err = logic.AcknowledgeClusterRecoveries(clusterName, userId, comment)
 	}
@@ -2979,7 +2979,7 @@ func (this *HttpAPI) AcknowledgeClusterRecoveries(params martini.Params, r rende
 		return
 	}
 
-	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknodledged cluster recoveries"), Details: clusterName})
+	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknowledged cluster recoveries"), Details: clusterName})
 }
 
 // ClusterInfo provides details of a given cluster
@@ -3007,7 +3007,7 @@ func (this *HttpAPI) AcknowledgeInstanceRecoveries(params martini.Params, r rend
 	if orcraft.IsRaftEnabled() {
 		ack := logic.NewRecoveryAcknowledgement(userId, comment)
 		ack.Key = instanceKey
-		orcraft.PublishCommand("ack-recovery", ack)
+		_, err = orcraft.PublishCommand("ack-recovery", ack)
 	} else {
 		_, err = logic.AcknowledgeInstanceRecoveries(&instanceKey, userId, comment)
 	}
@@ -3016,7 +3016,7 @@ func (this *HttpAPI) AcknowledgeInstanceRecoveries(params martini.Params, r rend
 		return
 	}
 
-	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknodledged instance recoveries"), Details: instanceKey})
+	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknowledged instance recoveries"), Details: instanceKey})
 }
 
 // ClusterInfo provides details of a given cluster
@@ -3068,7 +3068,7 @@ func (this *HttpAPI) AcknowledgeRecovery(params martini.Params, r render.Render,
 		return
 	}
 
-	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknodledged recovery"), Details: idParam})
+	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknowledged recovery"), Details: idParam})
 }
 
 // ClusterInfo provides details of a given cluster
@@ -3100,7 +3100,7 @@ func (this *HttpAPI) AcknowledgeAllRecoveries(params martini.Params, r render.Re
 		return
 	}
 
-	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknodledged all recoveries"), Details: comment})
+	Respond(r, &APIResponse{Code: OK, Message: fmt.Sprintf("Acknowledged all recoveries"), Details: comment})
 }
 
 // BlockedRecoveries reads list of currently blocked recoveries, optionally filtered by cluster name
